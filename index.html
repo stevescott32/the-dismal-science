@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <title>Recession Vis</title>
+  <link rel="stylesheet" href="src/styles/style.css" />
+  <!-- <script src="src/libs/d3.js"></script> -->
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="//d3js.org/d3-geo-projection.v1.min.js"></script>
+  <script src="src/libs/topojson.min.js"></script>
+</head>
+
+<body>
+
+  <h1>Confessions of a Recessed Economy</h1>
+
+  <h2>The World Economy:</h2>
+  <h2 class="h2-tagline">Debugging the Spread of Recessions</h2>
+  <div id="ripple-chart" class="chart">
+    <div id="ripple-buttons">
+      <button id='ripple-gdp' class="selected">GDP Growth</button>
+      <button id='ripple-unemployment'>Unemployment</button>
+      <br/>
+      <br/>
+    </div>
+    <svg width="1200" height="550">
+      <g id="map"> </g>
+      <g id="points"></g>
+    </svg>
+  </div>
+
+  <div id="ripple-slider">
+    <div class="year-selector"></div>
+    <div class="step-buttons"></div>
+    <div class="play-stop-buttons"></div>
+  </div>
+
+  <div id="trade-interconnectedness-chart" class="chart">
+  </div>
+
+  <hr/>
+
+  <div id="indicators-chart" class="chart">
+    <h2>United States Economic Indicators:</h2>
+    <h2 class="h2-tagline">How soon is the next recession?</h2>
+    <div id="indicators-buttons"></div>
+  </div>
+
+  <hr/>
+
+  <div id="trade-chart" class="chart">
+    <h2>Free Trade Agreements Signed:</h2>
+    <h2 class="h2-tagline">Trade tensions matter</h2>
+    <input type="checkbox" id="cumulative-checkbox">Show cumulative data, 1948 to selected year<br>
+    <h3 id="fta-selected-year"></h3>
+  </div>
+
+  <div id="trade-slider">
+      <div class="year-selector"></div>
+      <div class="step-buttons"></div>
+      <div class="play-stop-buttons"></div>
+  </div>
+
+
+  <script type="application/javascript" src="src/js/utils.js"></script>
+  <script type="application/javascript" src="src/js/ripple.js"></script>
+  <script type="application/javascript" src="src/js/timeSlider.js"></script>
+  <script type="application/javascript" src="src/js/indicatorsChart.js"></script>
+  <script type="application/javascript" src="src/js/dendrogram.js"></script>
+  <script type="application/javascript" src="src/js/script.js"></script>
+</body>
+
+</html>
