@@ -1,8 +1,6 @@
-console.log('Starting vis');
-
 let ripple = new Ripple();
 let rippleSlider = new TimeSlider('ripple-slider', 1982, 2019, 2007, false);
-let tradeSlider = new TimeSlider('trade-slider', 1948, 2018, 2003, true);
+let tradeSlider = new TimeSlider('trade-slider', 1948, 2018, 1970, true);
 let indicatorsChart = new IndicatorsChart();
 let dendrogram = new Dendrogram();
 
@@ -16,6 +14,7 @@ d3.json("src/data/world.json")
 ripplePromises.push(d3.csv('src/data/Quarterly_real_GDP_growth.csv', function(d) {
     let period = d['Period'].split('-');
     return {
+        countryName: d['Country'],
         countryId: d['LOCATION'],
         quarter: period[0],
         year: period[1],
@@ -26,6 +25,7 @@ ripplePromises.push(d3.csv('src/data/Quarterly_real_GDP_growth.csv', function(d)
 ripplePromises.push(d3.csv('src/data/Harmonised_unemployment_rate.csv', function(d) {
     let period = d['TIME'].split('-');
     return {
+        countryName: d['Country'],
         countryId: d['LOCATION'],
         month: period[1],
         year: period[0],

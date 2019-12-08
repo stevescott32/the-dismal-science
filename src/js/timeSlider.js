@@ -107,7 +107,7 @@ class TimeSlider {
             var millisecondsToWait = 1;
             if (this.yearsOnly) {
                 this.nextYear();
-                millisecondsToWait = 1000;
+                millisecondsToWait = 700;
             } else {
                 this.nextMonth();
             }
@@ -137,7 +137,24 @@ class TimeSlider {
 
     // set up the time slider, including buttons
     init() {
-        let yearRange = d3.range(this.yearRange.min, this.yearRange.max);
+        let yearRange = d3.range(this.yearRange.min, this.yearRange.max + 1);
+
+        let yearLabelConfig = {
+            width: this.config.width,
+            height: 25
+        }
+
+        let yearLabel = d3.select(`#${this.attachId}`)
+            .select('.year-selector')
+            .append('svg')
+            .attr('height', yearLabelConfig.height)
+            .attr('width', yearLabelConfig.width)
+            .append('text')
+            .text('Year')
+            .attr('transform',
+                  `translate(${(yearLabelConfig.width/2)} ,${(yearLabelConfig.height - 10)})`)
+            .style("text-anchor", "middle")
+            ;
 
         let sliderTime = d3.select(`#${this.attachId}`)
             .select('.year-selector')
@@ -151,7 +168,7 @@ class TimeSlider {
                 return this.yearsOnly ? 1 : 1 / 12;
             })
             .classed('slider', true)
-            .style('width', "83%")
+            .style('width', "83.9%")
             .on('change', (event) => {
                 // determine month and year from slider value
                 let value = document.getElementById(`time-slider-id${this.instanceId}`).value;
@@ -177,22 +194,19 @@ class TimeSlider {
             .attr('class', 'tick')
             .attr('value', (d) => { return d; })
             .attr('label', (d) => { return d + ' '; })
-            //.attr('transform', 'rotate(270)')
-            // .style('writing-mode', 'vertical-lr')
-            // .style('text-orientation', 'mixed')
-            ;
+        ;
+
 
         let tickText = d3.select(`#${this.attachId}`)
             .select('option')
-            .attr('transform', 'rotate(270)');
-        console.log('YOU GOT is');
-        console.log(tickText);
+            .attr('transform', 'rotate(270)')
+        ;
 
         // add buttons to step forward and back through the vis
         let previousYearButton = d3.select(`#${this.attachId}`)
             .select('.step-buttons')
             .append('button')
-            .text('Previous Year')
+            .text('<< Previous Year')
             .on('click', () => {
                 this.previousYear();
             })
@@ -202,12 +216,13 @@ class TimeSlider {
             let previousQuarterButton = d3.select(`#${this.attachId}`)
                 .select('.step-buttons')
                 .append('button')
-                .text('Previous Quarter')
+                .text('< Previous Quarter')
                 .on('click', () => {
                     this.previousQuarter();
                 })
                 ;
 
+                /*
             let previousMonthButton = d3.select(`#${this.attachId}`)
                 .select('.step-buttons')
                 .append('button')
@@ -225,11 +240,12 @@ class TimeSlider {
                     this.nextMonth();
                 })
                 ;
+                */
 
             let nextQuarterButton = d3.select(`#${this.attachId}`)
                 .select('.step-buttons')
                 .append('button')
-                .text('Next Quarter')
+                .text('Next Quarter >')
                 .on('click', () => {
                     this.nextQuarter();
                 })
@@ -239,7 +255,7 @@ class TimeSlider {
         let nextYearButton = d3.select(`#${this.attachId}`)
             .select('.step-buttons')
             .append('button')
-            .text('Next Year')
+            .text('Next Year >>')
             .on('click', () => {
                 this.nextYear();
             })
@@ -248,10 +264,19 @@ class TimeSlider {
         let playButton = d3.select(`#${this.attachId}`)
             .select('.play-stop-buttons')
             .append('button')
+            .attr('class', 'play')
             .text('Play')
             .on('click', () => {
                 this.startPlayMode();
             })
+            ;
+
+        playButton.append('svg')
+            .attr('height', 15)
+            .attr('width', 20)
+            .append('path')
+            .attr('d', 'M 8 4 20 10 8 16')
+            .attr('fill', 'green')
             ;
 
         let stopButton = d3.select(`#${this.attachId}`)
@@ -262,6 +287,13 @@ class TimeSlider {
                 this.stopPlayMode();
             })
             ;
+
+        stopButton.append('svg')
+            .attr('height', 15)
+            .attr('width', 20)
+            .append('path')
+            .attr('d', 'M 5 5 5 17 17 17 17 5')
+            .attr('fill', 'rgb(204, 0, 0)')
 
         let jumpToInput = d3.select(`#${this.attachId}`)
             .select('.play-stop-buttons')

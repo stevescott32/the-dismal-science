@@ -26,8 +26,8 @@ class Ripple {
         this.negativeColorScale = d3.scaleLinear().domain([-5.0, 0.0])
             .range(['red', 'white']);
 
-        this.unemploymentColorScale = d3.scaleLinear().domain([0.0, 22.0])
-            .range(['white', 'darkblue']);
+        this.unemploymentColorScale = d3.scaleLinear().domain([0.0, 15.0])
+            .range(['white', 'darkorange']);
 
         this.selectedPosColorScale = this.posGdpScale;
 
@@ -41,7 +41,6 @@ class Ripple {
         d3.selectAll('.scale-box').remove();
         d3.selectAll('.scale-label').remove();
 
-        console.log('adding scale ', scaleData);
         d3.select('#ripple-chart')
             .select('svg')
             .selectAll('.scale-box')
@@ -52,8 +51,8 @@ class Ripple {
             .attr('height', this.scaleConfig.scaleSize)
             .attr('width', this.scaleConfig.scaleSize)
             .attr('x', 10)
-            .attr('y', (d, i) => (i + 1) * this.scaleConfig.scaleSize + 
-              this.scaleConfig.yoffset)
+            .attr('y', (d, i) => (i + 1) * this.scaleConfig.scaleSize +
+                this.scaleConfig.yoffset)
             .style('fill', d => this.getColor(d.value))
             ;
 
@@ -63,9 +62,9 @@ class Ripple {
             .data(scaleData)
             .enter()
             .append('g')
-            .attr("transform", (d,i) => 
-                `translate(45,${(i + 1) * this.scaleConfig.scaleSize 
-                + (this.scaleConfig.scaleSize / 2) 
+            .attr('transform', (d, i) =>
+                `translate(45,${(i + 1) * this.scaleConfig.scaleSize
+                + (this.scaleConfig.scaleSize / 2)
                 + this.scaleConfig.yoffset})`)
             .append('text')
             .text(d => d.text)
@@ -79,7 +78,7 @@ class Ripple {
         unemploymentData.isMonthly = true;
 
         let gdpScaleData = [];
-        for(let i = -6; i <= 10; i += 2) {
+        for (let i = -6; i <= 10; i += 2) {
             gdpScaleData.push({
                 value: i,
                 text: `${i}%`
@@ -88,7 +87,7 @@ class Ripple {
         gdpGrowthData.scaleData = gdpScaleData;
 
         let unemploymentScaleData = []
-        for(let i = 0; i < 30; i += 5) {
+        for (let i = 0; i < 30; i += 5) {
             unemploymentScaleData.push({
                 value: i,
                 text: `${i}%`
@@ -147,11 +146,6 @@ class Ripple {
         this.selectedMonth = month;
         this.selectedYear = year;
         this.selectedQuarter = monthToQuarter(month);
-        console.log('Ripple chart updating with data ', this.selectedData,
-            ' year ', this.selectedYear,
-            ' month ', this.selectedMonth,
-            ' quarter ', this.selectedQuarter
-        );
         this.updateMap();
     }
 
@@ -191,19 +185,43 @@ class Ripple {
         return targetValue[0].value;
     }
 
+    getCountryName(data, id) {
+        let countryMatch = data.filter(d => {
+            return d.countryId == id;
+        });
+        if (undefined == countryMatch[0]) {
+            return '';
+        }
+        return countryMatch[0].countryName;
+    }
+
     // color the map according to the {year} and {quarter} within the dataset {data}
     updateMap() {
-        console.log('About to add scale');
         this.addScale(this.selectedData.scaleData);
 
-        let map = d3.select("#map");
+        let map = d3.select('#map');
 
-        map.selectAll(".countries")
+        let rippleChart = this;
+        map.selectAll('.countries')
             .style('fill', (d) => {
                 if (undefined == d) { return 'grey'; }
                 return this.getColor(
                     this.getValue(this.selectedData, d.id, this.selectedYear, this.selectedMonth)
                 );
+            })
+            .on('mouseover', function (d) {
+                d3.select(this).style('cursor', 'crosshair');
+                let dataValue =
+                    rippleChart.getValue(rippleChart.selectedData, d.id, rippleChart.selectedYear, rippleChart.selectedMonth);
+                if (undefined != dataValue) {
+                    let rounded = Math.round(dataValue * 100) / 100.0;
+                    let countryName = rippleChart.getCountryName(rippleChart.selectedData, d.id);
+                    let info 
+                        = `${countryName}, ${rippleChart.selectedQuarter}-${rippleChart.selectedYear}: ${rounded}%`;
+                    d3.select('#map-tooltip')
+                        .text(info)
+                        ;
+               }
             })
             ;
     }
@@ -216,13 +234,14 @@ class Ripple {
         // Draw the background map
         let path = d3.geoPath().projection(this.projection);
         let geoJSON = topojson.feature(world, world.objects.countries);
-        let map = d3.select("#map");
+        let map = d3.select('#map');
+
 
         map.append('path')
             .datum(d3.geoGraticule())
             .attr('d', path)
             .attr('fill', 'none')
-            .attr('class', "grat")
+            .attr('class', 'grat')
             ;
 
         map.selectAll('path')
@@ -235,6 +254,19 @@ class Ripple {
             .style('fill', 'rgb(211,211,211)')
             .style('stroke-width', 0.3)
             .style('stroke', 'black')
+            ;
+
+        this.tooltip = map.append('g')
+            .append('text')
+            .attr('id', 'map-tooltip')
+            .text('')
+            .attr('x', () => {
+                return (2/5) * this.config.width;
+            })
+            .attr('y', () => {
+                return 1 * (4/5) * this.config.height;
+            })
+            .style('opacity', 0.7)
             ;
     }
 }
